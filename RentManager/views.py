@@ -1,8 +1,22 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Property, Tenant, Lease
-from .forms import PropertyForm, TenantForm, LeaseForm
+from .forms import PropertyForm, TenantForm, LeaseForm, PaymentForm
 # Create your views here.
 
+def dashbord(request):
+    properties_count = Property.objects.count()
+    tenants_count = Tenant.objects.count()
+    active_leases = Lease.objects.filter(end_date__gte=date.today()).count()
+    pending_payments = Payment.objects.filter(status='pending').count()
+
+    context = {
+        'properties_count': properties_count,
+        'tenants_count': tenants_count,
+        'active_leases': active_leases,
+        'pending_payments': pending_payments,
+    }
+    return render(request, 'dashbord.html', context)
+    
 def property_list(request):
     properties = Property.objects.all()
     return render(request, 'prop_list.html', {'properties': properties})
