@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8">
+  <title>قائمة العقارات</title>
+</head>
+<body>
+  <h1>قائمة العقارات</h1>
+  <a href="{% url 'property_create' %}">إضافة عقار جديد</a>
+  <ul>
+    {% for property in properties %}
+    <li>
+      {{ property.title }} - {{ property.city }} - {{ property.rent_price }}
+    </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
