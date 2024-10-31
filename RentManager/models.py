@@ -35,10 +35,15 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('المبلغ'))
     payment_date = models.DateField(verbose_name=_('تاريخ الدفع'))
     payment_method = models.CharField(max_length=255, choices=[
-        ('cash', _('نقدا')'),
-        ('Bank Transfer',_('بنك التحويل')'),
-        ('Credit Card', _('بطاقة الائتمان')'),
-    ] verbose_name = _('طريقة الدفع'))
+        ('cash', 'نقدا'),
+        ('Bank Trasfer', 'تحويل بنكي'),
+        ('Credit Card', 'بطاقة انتمان'),
+    ], verbose_name = _('طريقة الدفع'))
+    status = models.CharField(max_length=255, choices= [
+        ('pending', 'قيد الانتظار'),
+        ('paid', 'مدفوع'),
+        ('cancelled', 'الغاء'),
+    ], verbose_name=_('حالة الدفع'))
 
     def __str__(self):
         return f"{self.lease} - {self.amount} ({self.status})"
