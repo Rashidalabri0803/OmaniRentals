@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
+from django.contrib.auth.models import User
 
 class Property(models.Model):
     title = models.CharField(max_length=255, verbose_name=_('عنوان العقار'))
@@ -29,3 +29,16 @@ class Lease(models.Model):
 
     def __str__(self):
         return f"{self.tenant.full_name} - {self.property.title}"
+
+class Payment(models.Model):
+    lease = models.ForeignKey(Lease, on_delete=models.CASCADE, verbose_name=_('عقد الإيجار'))
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('المبلغ'))
+    payment_date = models.DateField(verbose_name=_('تاريخ الدفع'))
+    payment_method = models.CharField(max_length=255, choices=[
+        ('cash', _('نقدا')'),
+        ('Bank Transfer',_('بنك التحويل')'),
+        ('Credit Card', _('بطاقة الائتمان')'),
+    ] verbose_name = _('طريقة الدفع'))
+
+    def __str__(self):
+        return f"{self.lease} - {self.amount} ({self.status})"
