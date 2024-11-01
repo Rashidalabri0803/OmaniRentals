@@ -1,49 +1,65 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import User
+
+
+class CustomUser(AbstractUser):
+    tenant = models.ForeignKey('Tenant', on_delete=models.CASCADE, null=True, blank=True)
+    contract = models.ForeignKey('Contract', on_delete=models.CASCADE, null=True, blank=True)
+    payment = models.ForeignKey('Payment', on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'مستأجر'
+        verbose_name_plural = 'مستأجرين'
+
+    def __str__(self):
+        return self.username
 
 class Property(models.Model):
-    title = models.CharField(max_length=255, verbose_name=_('عنوان العقار'))
-    address = models.CharField(max_length=255, verbose_name=_('العنوان'))
-    city = models.CharField(max_length=100, verbose_name=_('المدينة'))
-    rent_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('سعر الإيجار'))
-    description = models.TextField(verbose_name=_('الوصف'))
+    name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    description = models.TextField()
+
+    class Meta:
+        verbose_name = 'عقار'
+        verbose_name_plural = 'عقارات'
 
     def __str__(self):
-        return self.title
+        return self.name
 
 class Tenant(models.Model):
-    full_name = models.CharField(max_length=255, verbose_name=_('الاسم الكامل'))
-    phone = models.CharField(max_length=20, verbose_name=_('رقم الهاتف'))
-    email = models.EmailField(verbose_name=_('البريد الإلكتروني'))
+    name = models.CharField(max_length=255)
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
+
+    class Meta:
+        verbose_name = 'مستأجر'
+        verbose_name_plural = 'مستأجرين'
 
     def __str__(self):
-        return self.full_name
+        return self.name
 
-class Lease(models.Model):
-    property = models.ForeignKey(Property, on_delete=models.CASCADE, verbose_name=_('العقار'))
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, verbose_name=_('المستأجر'))
-    start_date = models.DateField(verbose_name=_('تاريخ البدء'))
-    end_date = models.DateField(verbose_name=_('تاريخ الانتهاء'))
-    rent_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('مبلغ الإيجار'))
+class Contract(models.Model):
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('Tenant', on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    rent = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = 'عقد'
+        verbose_name_plural = 'عقود'
 
     def __str__(self):
-        return f"{self.tenant.full_name} - {self.property.title}"
+        return f"{self.tenant} - {self.property}"
 
 class Payment(models.Model):
-    lease = models.ForeignKey(Lease, on_delete=models.CASCADE, verbose_name=_('عقد الإيجار'))
-    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('المبلغ'))
-    payment_date = models.DateField(verbose_name=_('تاريخ الدفع'))
-    payment_method = models.CharField(max_length=255, choices=[
-        ('cash', 'نقدا'),
-        ('Bank Trasfer', 'تحويل بنكي'),
-        ('Credit Card', 'بطاقة انتمان'),
-    ], verbose_name = _('طريقة الدفع'))
-    status = models.CharField(max_length=255, choices= [
-        ('pending', 'قيد الانتظار'),
-        ('paid', 'مدفوع'),
-        ('cancelled', 'الغاء'),
-    ], verbose_name=_('حالة الدفع'))
+    contract = models.ForeignKey('Contract', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+
+    class Meta:
+        verbose_name = 'دفعة'
+        verbose_name_plural = 'دفعات'
 
     def __str__(self):
-        return f"{self.lease} - {self.amount} ({self.status})"
+        return f"{self.contract} - {self.amount}"
