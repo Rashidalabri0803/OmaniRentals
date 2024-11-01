@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-AUTH_USER_MODEL = 'RentManager.User'
+AUTH_USER_MODEL = 'RentManager.CustomUser'
 # Application definition
 
 INSTALLED_APPS = [
